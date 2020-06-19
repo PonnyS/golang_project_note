@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="7fc6c843-dc23-4d9d-aa36-01cea8377887" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Go File" />
+      </list>
+    </option>
+  </component>
+  <component name="GOROOT" path="/usr/local/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GoLibraries">
+    <option name="indexEntireGoPath" value="false" />
+  </component>
+  <component name="ProjectId" id="1dX6S98YROdVt11GLcXFL8pYmWl" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="configurable.Global.GOPATH.is.expanded" value="true" />
+    <property name="configurable.Module.GOPATH.is.expanded" value="false" />
+    <property name="configurable.Project.GOPATH.is.expanded" value="true" />
+    <property name="go.import.settings.migrated" value="true" />
+    <property name="go.sdk.automatically.set" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="go.sdk" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Build.go build golang_project_note">
+    <configuration name="go build golang_project_note" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
+      <module name="golang_project_note" />
+      <working_directory value="$PROJECT_DIR$" />
+      <kind value="PACKAGE" />
+      <filePath value="$PROJECT_DIR$/main.go" />
+      <package value="golang_project_note" />
+      <directory value="$PROJECT_DIR$/" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ants_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true" nameIsGenerated="true">
+      <module name="golang_project_note" />
+      <working_directory value="$PROJECT_DIR$/ants" />
+      <framework value="gotest" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$/" />
+      <filePath value="$PROJECT_DIR$/ants/ants_test.go" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Go Build.go build golang_project_note" />
+        <item itemvalue="Go Test.ants_test.go" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="VgoProject">
+    <integration-enabled>true</integration-enabled>
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="599" y="-647" key="#Custom_Plugin_Repositories" timestamp="1592559578138">
+      <screen x="-268" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="599" y="-647" key="#Custom_Plugin_Repositories/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559578138" />
+    <state x="463" y="-812" key="#HTTP_Proxy" timestamp="1592559771138">
+      <screen x="-268" y="-1080" width="1920" height="1080" />
+    </state>
+    <state x="463" y="-812" key="#HTTP_Proxy/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559771138" />
+    <state width="1419" height="237" key="GridCell.Tab.0.bottom" timestamp="1592567354572">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state width="1899" height="297" key="GridCell.Tab.0.bottom/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559486331" />
+    <state width="1419" height="237" key="GridCell.Tab.0.bottom/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592567354572" />
+    <state width="1419" height="237" key="GridCell.Tab.0.center" timestamp="1592567354569">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state width="1899" height="297" key="GridCell.Tab.0.center/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559486329" />
+    <state width="1419" height="237" key="GridCell.Tab.0.center/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592567354569" />
+    <state width="1419" height="237" key="GridCell.Tab.0.left" timestamp="1592567354567">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state width="1899" height="297" key="GridCell.Tab.0.left/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559486328" />
+    <state width="1419" height="237" key="GridCell.Tab.0.left/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592567354567" />
+    <state width="1419" height="237" key="GridCell.Tab.0.right" timestamp="1592567354570">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state width="1899" height="297" key="GridCell.Tab.0.right/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559486330" />
+    <state width="1419" height="237" key="GridCell.Tab.0.right/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592567354570" />
+    <state x="351" y="149" key="SettingsEditor" timestamp="1592564179299">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state x="201" y="-901" key="SettingsEditor/0.0.1436.900/-268.-1080.1920.1080@-268.-1080.1920.1080" timestamp="1592559889732" />
+    <state x="351" y="149" key="SettingsEditor/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592564179299" />
+    <state x="421" y="205" width="598" height="490" key="find.popup" timestamp="1592561007311">
+      <screen x="0" y="0" width="1436" height="900" />
+    </state>
+    <state x="421" y="205" width="598" height="490" key="find.popup/0.0.1436.900/-268.-1080.1920.1080@0.0.1436.900" timestamp="1592561007311" />
+  </component>
+</project>
