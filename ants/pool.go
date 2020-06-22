@@ -140,9 +140,9 @@ func (p *Pool) retrieveWorker() (w *goWorker) {
 	}
 
 	p.lock.Lock()
-	// w 为nil的两种情况
-	// 1. 刚开始，workerArray 是空的
-	// 2. workerArray 满了
+	// detach为nil的情况
+	// 1. worker队列是空的
+	// 2. worker队列满了
 	w = p.workers.detach()
 	if w != nil {
 		p.lock.Unlock()
@@ -151,12 +151,13 @@ func (p *Pool) retrieveWorker() (w *goWorker) {
 		spawnWorker()
 	} else if p.Running() < p.Cap() {
 		// 出现这种情况的可能：
-		// 1. 刚开始，workerArray 是空的
-		// TODO：2. workerArray 已经满了，但这时候调整了容量（即 Tune()）
+		// 1. 刚开始，worker队列是空的
+		// 2. 任务都在运行中，没有返回给worker队列
+		// 3. worker队列已经满了，但这时候调整了容量（即 Tune()）
 		p.lock.Unlock()
 		spawnWorker()
 	} else {
-		// 无阻塞
+		// 无阻塞，满了直接返回
 		if p.options.NonBlocking {
 			p.lock.Unlock()
 			return
@@ -171,8 +172,8 @@ func (p *Pool) retrieveWorker() (w *goWorker) {
 		// 唤醒后会重新上锁，此时可能锁被抢占导致再次阻塞
 		p.cond.Wait()
 		p.blockingNum--
-		// 结合 *goWorker.run() 来看，decRunning()后会将 *goWorker 放入 workerCache 中，所以直接从 workerCache 中来拿即可
-		// 结合 periodicallyPurge() 来看，是因为把所有 worker 都清理了
+		// 没有worker在运行，说明就算detach也没有worker可用。
+		// 因为decRunning()后是将worker放入workerCache中，而不是放回队列
 		if p.Running() == 0 {
 			p.lock.Unlock()
 			spawnWorker()
@@ -199,7 +200,7 @@ func (p *Pool) revertWorker(w *goWorker) bool {
 		return false
 	}
 
-	// 只通知一个
+	// 放回一个，通知一个
 	p.cond.Signal()
 	p.lock.Unlock()
 	return true
@@ -225,6 +226,7 @@ func (p *Pool) Cap() int {
 	return int(atomic.LoadInt32(&p.capacity))
 }
 
+// 容量调整只会影响到队列是否已满的判断，不会对已有worker产生影响
 func (p *Pool) Tune(size int) {
 	if size < 0 || p.Cap() == size || p.options.PreAlloc {
 		return

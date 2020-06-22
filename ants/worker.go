@@ -16,9 +16,7 @@ func (w *goWorker) run() {
 	go func() {
 		defer func() {
 			w.pool.decRunning()
-			// 两种情况
-			// 1. 正常退出：worker是没有放回队列的
-			// 2. 队列满了：放入workerCache（sync.Pool）中，有shared区和private区
+			// 放入sync.Pool中，对象复用，有利于缓解GC压力，其他P也可以来偷取worker来使用
 			w.pool.workerCache.Put(w)
 			if p := recover(); p != nil {
 				if ph := w.pool.options.PanicHandler; ph != nil {
@@ -33,12 +31,13 @@ func (w *goWorker) run() {
 		}()
 
 		for f := range w.task {
-			// 退出是不需要把worker放回队列的
+			// 为什么worker退出不放回队列？
+			// 因为退出有两种情况：1. 清理过期协程 2. 队列重置。
 			if f == nil {
 				return
 			}
 			f()
-			// 每个任务独占一个worker，用完即放回队列中重复使用
+			// 每个任务独占一个worker，用完即放回队列中，相比放回workerCache提高效率
 			if ok := w.pool.revertWorker(w); !ok {
 				return
 			}

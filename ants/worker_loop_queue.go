@@ -2,6 +2,7 @@ package ants
 
 import "time"
 
+// 循环队列，事先分配好数组的内存
 type loopQueue struct {
 	items  []*goWorker
 	expiry []*goWorker
@@ -13,8 +14,14 @@ type loopQueue struct {
 	isFull bool
 }
 
+func newWorkerLoopQueue(size int) *loopQueue {
+	return &loopQueue{
+		items: make([]*goWorker, size),
+		size:  size,
+	}
+}
+
 func (wq *loopQueue) retrieveExpiry(duration time.Duration) []*goWorker {
-	// 计算最小时间，遍历
 	if wq.isEmpty() {
 		return nil
 	}
@@ -75,13 +82,6 @@ func (wq *loopQueue) insert(worker *goWorker) error {
 
 func (wq *loopQueue) isEmpty() bool {
 	return wq.head == wq.tail && !wq.isFull
-}
-
-func newWorkerLoopQueue(size int) *loopQueue {
-	return &loopQueue{
-		items: make([]*goWorker, size),
-		size:  size,
-	}
 }
 
 func (wq *loopQueue) len() int {

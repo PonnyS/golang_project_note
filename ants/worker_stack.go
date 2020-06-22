@@ -2,10 +2,18 @@ package ants
 
 import "time"
 
+// 采用栈结构，不用事先分配好数组内存
 type workerStack struct {
 	items  []*goWorker
 	expiry []*goWorker
 	size   int
+}
+
+func newWorkerStack(size int) *workerStack {
+	return &workerStack{
+		items: make([]*goWorker, 0, size),
+		size:  size,
+	}
 }
 
 func (wq *workerStack) retrieveExpiry(duration time.Duration) []*goWorker {
@@ -52,13 +60,6 @@ func (wq *workerStack) insert(worker *goWorker) error {
 
 func (wq *workerStack) isEmpty() bool {
 	return len(wq.items) == 0
-}
-
-func newWorkerStack(size int) *workerStack {
-	return &workerStack{
-		items: make([]*goWorker, 0, size),
-		size:  size,
-	}
 }
 
 func (wq *workerStack) len() int {
