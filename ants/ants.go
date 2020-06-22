@@ -3,6 +3,7 @@ package ants
 import (
 	"errors"
 	"log"
+	"math"
 	"os"
 	"runtime"
 	"time"
@@ -10,6 +11,8 @@ import (
 
 const (
 	DefaultCleanIntervalTime = time.Second
+
+	DefaultAntsPoolSize = math.MaxInt32
 )
 
 const (
@@ -33,7 +36,11 @@ var (
 	// ErrPoolOverload will be returned when the pool is full and no workers available.
 	ErrPoolOverload = errors.New("too many goroutines blocked on submit or Nonblocking is set")
 
+	ErrInvalidPreAllocSize = errors.New("can not set up a negative capacity under PreAlloc mode")
+
 	defaultLogger = Logger(log.New(os.Stderr, "", log.LstdFlags))
+
+	defaultAntsPool, _ = NewPool(DefaultAntsPoolSize)
 
 	//你对 ants 的调度模式的理解的就是错的，调用 Submit 方法提交任务的时候，同一个 worker 只能被一个调用方持有，
 	//不存在多个调用方都可以拿到同一个 worker 并往它的 chan 里塞任务。
@@ -53,4 +60,28 @@ var (
 
 type Logger interface {
 	Printf(format string, args ...interface{})
+}
+
+func Submit(task func()) error {
+	return defaultAntsPool.Submit(task)
+}
+
+func Running() int {
+	return defaultAntsPool.Running()
+}
+
+func Cap() int {
+	return defaultAntsPool.Cap()
+}
+
+func Free() int {
+	return defaultAntsPool.Free()
+}
+
+func Release() {
+	defaultAntsPool.Release()
+}
+
+func Reboot() {
+	defaultAntsPool.Reboot()
 }

@@ -8,7 +8,7 @@ type Options struct {
 	// 是否在初始化 pool 的时候就给 worker数组分配好 `items []*goWorker` 内存
 	PreAlloc         bool
 	PanicHandler     func(interface{})
-	NonBlocking      bool
+	Nonblocking      bool
 	MaxBlockingTasks int
 }
 
@@ -52,9 +52,9 @@ func WithPanicHandler(panicHandler func(interface{})) Option {
 	}
 }
 
-func WithNonBlocking(nonBlocking bool) Option {
+func WithNonblocking(nonBlocking bool) Option {
 	return func(opts *Options) {
-		opts.NonBlocking = nonBlocking
+		opts.Nonblocking = nonBlocking
 	}
 }
 

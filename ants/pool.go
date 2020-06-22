@@ -1,3 +1,4 @@
+// 适用于大量的一次性任务，每个任务会附到一个worker里去执行
 package ants
 
 import (
@@ -158,7 +159,7 @@ func (p *Pool) retrieveWorker() (w *goWorker) {
 		spawnWorker()
 	} else {
 		// 无阻塞，满了直接返回
-		if p.options.NonBlocking {
+		if p.options.Nonblocking {
 			p.lock.Unlock()
 			return
 		}
@@ -228,6 +229,8 @@ func (p *Pool) Cap() int {
 
 // 容量调整只会影响到队列是否已满的判断，不会对已有worker产生影响
 func (p *Pool) Tune(size int) {
+	// Why PreAlloc mode can't?
+	// 因为会导致大量的内存拷贝、worker队列迁移到新slice
 	if size < 0 || p.Cap() == size || p.options.PreAlloc {
 		return
 	}
