@@ -18,3 +18,11 @@ type eventloop struct {
 	eventHandler      EventHandler
 	calibrateCallback func(*eventloop, int32)
 }
+
+func (el *eventloop) loopCloseConn(c *conn, err error) error {
+	return nil
+}
+
+func (el *eventloop) loopWake(c *conn) error {
+	return nil
+}
