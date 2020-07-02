@@ -119,14 +119,14 @@ func (el *eventloop) loopRun() {
 
 func (el *eventloop) loopTicker() {
 	var (
-		err    error
-		deplay time.Duration
-		open   bool
+		err   error
+		delay time.Duration
+		open  bool
 	)
 	for {
 		err = el.poller.Trigger(func() (err error) {
-			deplay, action := el.eventHandler.Tick()
-			el.svr.ticktock <- deplay
+			delay, action := el.eventHandler.Tick()
+			el.svr.ticktock <- delay
 			switch action {
 			case None:
 			case Shutdown:
@@ -138,8 +138,8 @@ func (el *eventloop) loopTicker() {
 			el.svr.logger.Printf("failed to awake poller with error:%v, stopping ticker\n", err)
 			break
 		}
-		if deplay, open = <-el.svr.ticktock; open {
-			time.Sleep(deplay)
+		if delay, open = <-el.svr.ticktock; open {
+			time.Sleep(delay)
 		} else {
 			break
 		}
@@ -253,7 +253,7 @@ func (el *eventloop) loopAccept(fd int) error {
 			return err
 		}
 		c := newTCPConn(nfd, el, sa)
-		if err = el.poller.AddRead(fd); err == nil {
+		if err = el.poller.AddRead(nfd); err == nil {
 			el.connections[c.fd] = c
 			el.calibrateCallback(el, 1)
 			return el.loopOpen(c)
