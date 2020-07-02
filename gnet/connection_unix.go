@@ -190,7 +190,7 @@ func (c *conn) ShiftN(n int) (size int) {
 }
 
 func (c *conn) BufferLength() int {
-	return c.inboundBuffer.Len() + len(c.buffer)
+	return c.inboundBuffer.Length() + len(c.buffer)
 }
 
 // TCP的异步写

@@ -17,7 +17,7 @@ func (svr *server) acceptNewConnection(fd int) error {
 	}
 
 	el := svr.subEventLoopSet.next(nfd)
-	c := newTCPConn(fd, el, sa)
+	c := newTCPConn(nfd, el, sa)
 	_ = el.poller.Trigger(func() (err error) {
 		if err = el.poller.AddRead(nfd); err != nil {
 			return
