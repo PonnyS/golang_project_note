@@ -9,7 +9,7 @@ const (
 	EVFilterWrite = unix.EVFILT_WRITE
 	EVFilterRead  = unix.EVFILT_READ
 	// 除了read、write外的事件
-	EvFilterSock = -0xd
+	EVFilterSock = -0xd
 )
 
 type eventList struct {

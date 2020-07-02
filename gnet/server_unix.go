@@ -36,8 +36,13 @@ func (svr *server) activateReactors(numEventLoop int) error {
 	for i := 0; i < numEventLoop; i++ {
 		if p, err := netpoll.OpenPoller(); err == nil {
 			el := &eventloop{
-				poller: p,
-				// 	TODO
+				svr:               svr,
+				codec:             svr.codec,
+				poller:            p,
+				packet:            make([]byte, 0x10000),
+				connections:       make(map[int]*conn),
+				eventHandler:      svr.eventHandler,
+				calibrateCallback: svr.subEventLoopSet.calibrate,
 			}
 			svr.subEventLoopSet.register(el)
 		} else {
@@ -50,8 +55,9 @@ func (svr *server) activateReactors(numEventLoop int) error {
 
 	if p, err := netpoll.OpenPoller(); err == nil {
 		el := &eventloop{
+			idx:    -1,
 			poller: p,
-			// TODO
+			svr:    svr,
 		}
 		_ = el.poller.AddRead(svr.ln.fd)
 		svr.mainLoop = el
@@ -67,23 +73,95 @@ func (svr *server) activateReactors(numEventLoop int) error {
 }
 
 func (svr *server) activateLoops(numEventLoop int) error {
+	for i := 0; i < numEventLoop; i++ {
+		if p, err := netpoll.OpenPoller(); err == nil {
+			el := &eventloop{
+				svr:               svr,
+				codec:             svr.codec,
+				poller:            p,
+				packet:            make([]byte, 0x10000),
+				connections:       make(map[int]*conn),
+				eventHandler:      svr.eventHandler,
+				calibrateCallback: svr.subEventLoopSet.calibrate,
+			}
+			_ = el.poller.AddRead(svr.ln.fd)
+			svr.subEventLoopSet.register(el)
+		} else {
+			return err
+		}
+	}
+	svr.startLoops()
 	return nil
 }
 
 func (svr *server) startReactors() {
-
+	svr.subEventLoopSet.iterate(func(i int, e *eventloop) bool {
+		svr.wg.Add(1)
+		go func() {
+			svr.activateSubReactor(e)
+			svr.wg.Done()
+		}()
+		return true
+	})
 }
 
-func (svr *server) stop() {
-
+func (svr *server) startLoops() {
+	svr.subEventLoopSet.iterate(func(i int, e *eventloop) bool {
+		svr.wg.Add(1)
+		go func() {
+			e.loopRun()
+			svr.wg.Done()
+		}()
+		return true
+	})
 }
 
-func (svr *server) closeLoops() {
-
+func (svr *server) waitForShutdown() {
+	svr.cond.L.Lock()
+	// TODO 会产生死锁
+	svr.cond.Wait()
+	svr.cond.L.Unlock()
 }
 
 func (svr *server) signalShutdown() {
+	svr.once.Do(func() {
+		svr.cond.L.Lock()
+		svr.cond.Signal()
+		svr.cond.L.Unlock()
+	})
+}
 
+func (svr *server) stop() {
+	svr.waitForShutdown()
+
+	svr.subEventLoopSet.iterate(func(i int, e *eventloop) bool {
+		sniffErrorAndLog(e.poller.Trigger(func() error {
+			return errServerShutdown
+		}))
+		return true
+	})
+
+	if svr.mainLoop != nil {
+		svr.ln.close()
+		sniffErrorAndLog(svr.mainLoop.poller.Trigger(func() error {
+			return errServerShutdown
+		}))
+	}
+
+	svr.wg.Wait()
+
+	svr.closeLoops()
+
+	if svr.mainLoop != nil {
+		sniffErrorAndLog(svr.mainLoop.poller.Close())
+	}
+}
+
+func (svr *server) closeLoops() {
+	svr.subEventLoopSet.iterate(func(i int, e *eventloop) bool {
+		_ = e.poller.Close()
+		return true
+	})
 }
 
 func serve(eventHandler EventHandler, listener *listener, options *Options) error {
@@ -117,13 +195,13 @@ func serve(eventHandler EventHandler, listener *listener, options *Options) erro
 		}
 		return options.Logger
 	}()
-	// TODO
-	// svr.codec = func() ICodec {
-	// 	if options.Codec == nil {
-	// 		return new(BuiltInFrameCodec)
-	// 	}
-	// 	return options.Codec
-	// }()
+
+	svr.codec = func() ICodec {
+		if options.Codec == nil {
+			return new(BuiltInFrameCodec)
+		}
+		return options.Codec
+	}()
 
 	server := Server{
 		svr:          svr,
@@ -142,6 +220,7 @@ func serve(eventHandler EventHandler, listener *listener, options *Options) erro
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	defer close(shutdown)
 
 	go func() {
 		if <-shutdown == nil {

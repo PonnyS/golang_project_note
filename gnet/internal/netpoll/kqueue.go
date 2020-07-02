@@ -122,7 +122,7 @@ func (p *Poller) Polling(callback func(fd int, filter int16) error) (err error) 
 			if fd := int(el.events[i].Ident); fd != 0 {
 				evFilter = el.events[i].Filter
 				if (el.events[i].Flags&unix.EV_EOF != 0) || (el.events[i].Flags&unix.EV_ERROR != 0) {
-					evFilter = EvFilterSock
+					evFilter = EVFilterSock
 				}
 
 				if err = callback(fd, evFilter); err != nil {
@@ -135,6 +135,7 @@ func (p *Poller) Polling(callback func(fd int, filter int16) error) (err error) 
 
 		if wakenUp {
 			wakenUp = false
+			// 在server.stop()逻辑中，退出是trigger一个事件直接返回error
 			if err = p.asyncJobQueue.ForEach(); err != nil {
 				return
 			}

@@ -21,6 +21,8 @@ type Options struct {
 	Multicore    bool
 	LB           LoadBalancing
 	TCPKeepAlive time.Duration
+	Ticker       bool
+	Codec        ICodec
 }
 
 func WithOptions(options Options) Option {
@@ -62,5 +64,17 @@ func WithLoadBalancing(lb LoadBalancing) Option {
 func WithTCPKeepAlive(tcpKeepAlive time.Duration) Option {
 	return func(opts *Options) {
 		opts.TCPKeepAlive = tcpKeepAlive
+	}
+}
+
+func WithTicker(ticker bool) Option {
+	return func(opts *Options) {
+		opts.Ticker = ticker
+	}
+}
+
+func WithCodec(codec ICodec) Option {
+	return func(opts *Options) {
+		opts.Codec = codec
 	}
 }

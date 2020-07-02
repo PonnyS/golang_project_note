@@ -17,15 +17,14 @@ type conn struct {
 	localAddr  net.Addr
 	remoteAddr net.Addr
 	ctx        interface{}
-	// reuse memory of inbound data as a temporary buffer
-	// TODO el.loopRead() 首先会将unix.Read()的数据存入buffer中
+	// 客户端数据首先会存入buffer中
 	buffer []byte
 	loop   *eventloop
 	opened bool
 	codec  ICodec
-	// TODO bytes buffer for buffering current packet and data in ring-buffer
+	// 整合c.buffer + c.inboundBuffer，方便统一取出
 	byteBuffer *bytebuffer.ByteBuffer
-	// TODO 从客户端接收到的数据
+	// buffer处理后剩余的数据会存入inboundBuffer，所以会先从这里取数据
 	inboundBuffer *ringbuffer.RingBuffer
 	// 发送给客户端的缓冲区，write不完会放到缓冲里
 	outboundBuffer *ringbuffer.RingBuffer
@@ -42,6 +41,7 @@ func newTCPConn(fd int, el *eventloop, sa unix.Sockaddr) *conn {
 	}
 }
 
+// 手动释放内存
 func (c *conn) releaseTCP() {
 	c.opened = false
 	c.sa = nil
@@ -110,7 +110,7 @@ func (c *conn) write(buf []byte) {
 	}
 }
 
-// unix.Sendto: 当flags为0时，Sendto和Write一样
+// UDP写，因为UDP没有连接的概念，所以每次都要传对端地址
 func (c *conn) sendTo(buf []byte) error {
 	return unix.Sendto(c.fd, buf, 0, c.sa)
 }
@@ -193,6 +193,7 @@ func (c *conn) BufferLength() int {
 	return c.inboundBuffer.Len() + len(c.buffer)
 }
 
+// TCP的异步写
 func (c *conn) AsyncWrite(buf []byte) (err error) {
 	var encodeBuf []byte
 	if encodeBuf, err = c.codec.Encode(c, buf); err == nil {
