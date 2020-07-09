@@ -117,6 +117,7 @@ func (svr *server) startLoops() {
 }
 
 func (svr *server) waitForShutdown() {
+	// unlock未lock的锁会fatal error
 	svr.cond.L.Lock()
 	// TODO 会产生死锁
 	svr.cond.Wait()

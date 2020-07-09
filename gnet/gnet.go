@@ -12,7 +12,7 @@ import (
 	"golang_project_note/gnet/internal/netpoll"
 )
 
-// 一个event完成之后需要做的操作
+// event的每个步骤结束后将进行的操作
 type Action int
 
 const (
@@ -32,13 +32,14 @@ type Logger interface {
 
 type Server struct {
 	svr *server
-	// 是否启用多核，如果启用则需要注意事件回调之间共享的数据同步
+	// 是否启用多核，将决定reactor的数量，如果启用则需要注意事件回调之间共享的数据同步
 	Multicore bool
 	// 服务监听地址
 	Addr net.Addr
-	// Reactor数
+	// reactor数量
 	NumEventLoop int
-	// SO_REUSEPORT：支持多个进程/线程绑定到统一端口，这样就不用listen同一个socket
+	// SO_REUSEPORT：支持多个进程/线程绑定到同一端口，这样就不用listen同一个socket
+	// 每个eventloop将一起监听ln
 	ReusePort bool
 	// SO_KEEPALIVE
 	TCPKeepAlive time.Duration
@@ -158,6 +159,7 @@ func Serve(eventHandler EventHandler, addr string, opts ...Option) (err error) {
 	defer func() {
 		ln.close()
 		if ln.network == "unix" {
+			// 删除socket文件
 			sniffErrorAndLog(os.RemoveAll(ln.addr))
 		}
 	}()
